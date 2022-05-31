@@ -35,6 +35,11 @@ It was made on and is designed for Linux as that is where the problem lay, I cou
         "bEndpointAddress     0x03  EP 3 OUT", and place the value after the "0x" (EG 03) on the last line of ".env.example"</p></li>
         <li><p>Finally, remove the ".example" off the end of the file, and you should be good to go</p></li>
     </ul>
+    <li>Enable certain permissions</li>
+    <ul>
+        <li><p>Because you are accessing the USB kernel on Linux, you need certain permissions.<br>
+        So in a terminal, run "sudo usermod -a -G lp [username]" which should do the trick.
+    </il>
     <li>(Optionally) install globally</li>
     <ul>
         <li><p>If you are indeed on a Linux system, then you can install this mini program globally.<br>
