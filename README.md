@@ -11,6 +11,7 @@
     <li>pyserial (for serial devices) - <a>https://github.com/lincolnloop/python-qrcode</a></li>
     <li>python-barcode - <a>https://github.com/WhyNotHugo/python-barcode</a></li>
 </ul><br>
+<p>Alternatively, you can run `pip install -f requirements.txt` and install everything listed above</p>
 
 <h2>Usage</h2>
 pyprint [-h] [-q] [-i] [-b] [-nc] Content
