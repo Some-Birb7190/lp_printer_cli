@@ -1,4 +1,5 @@
 #!/bin/env python3
+# something that was used for demonstrative puposes only
 import usb.core
 import usb.util
 

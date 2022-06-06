@@ -1,16 +1,18 @@
 <h1>A program to send ESC/POS commands to a usb device</h1>
 <p>All this program (./pyprint) does is send out basic ESC/POS commands to a printer connected over usb, with the use of external libraries.<br>
-It was made on and is designed for Linux as that is where the problem lay, I couldn't find a unified program to send things out to these printers...so I wrote my own</p><br>
+It was made on and is designed for Linux as that is where the problem lay, I couldn't find a unified program to send things out to these printers...so I wrote my own.<br>
+All my testing was done on a generic 57mm printer, nothing special, just something cheap off of Amazon. <b>Please do not submit issues saying it doesn't work with your printer, I won't know how to help.</b></p><br>
 
 <h2>Pre-Requisites</h2>
 <p>For this program, you will need:</p>
 <ul>
+    <li>Anything greater than Python 3 (made using Python 3.8.10)
     <li>pyusb - <a>https://github.com/walac/pyusb</a></li>
     <li>Pillow - <a>https://github.com/python-pillow/Pillow</a></li>
     <li>python-qrcode - <a>https://github.com/lincolnloop/python-qrcode</a></li>
     <li>pyserial (for serial devices) - <a>https://github.com/lincolnloop/python-qrcode</a></li>
     <li>python-barcode - <a>https://github.com/WhyNotHugo/python-barcode</a></li>
-    <li>python-escpos - <a>https://github.com/paython-escpos/python-escpos</a></li>
+    <li>python-escpos - <a>https://github.com/python-escpos/python-escpos</a></li>
 </ul><br>
 
 <h2>Installation</h2>
@@ -51,8 +53,8 @@ It was made on and is designed for Linux as that is where the problem lay, I cou
 
 
 <h2>Usage</h2>
-pyprint [-h] [-q] [-i] [-b] [-nc] Content
-
+pyprint [-h] [-q] [-i] [-b] [-nc] Content<br>
+<br>
 -h  : Displays the help message<br>
 -q  : Encodes "Content" inside a QR code and prints it<br>
 -i  : Takes a file path from "Content" to an image and print it (gets a bit dodgy with large images)<br>
@@ -61,12 +63,18 @@ pyprint [-h] [-q] [-i] [-b] [-nc] Content
 <br>
 Content : The file/text you want to be printed/encoded<br>
 <br>
+
 <h2>notes</h2>
 <ul>
     <li>By default, will just print out Content with standard line wrapping</li>
     <li>[-i] and [-q] cannot be passed at the same time, you cannot encode an image in a QR code</li>
     <li>[-i] and [-b] cannot be passed at the same time, you cannot encode an image in a Barcode</li>
     <li>[-b] and [-q] cannot be passed at the same time, you cannot print both off at once</li>
-    <li>The max string length for barcodes is 8 characters</li>
+    <li>The max string length for barcodes is 8 characters (for 57mm paper)</li>
     <li>If [-nc] is passed as well as [-q] or [-b], they will both override [-nc] as they require properly finishing the print</li>
-</ul>
+    <li>./(PYUSB)_usb_receipt_printer_demo.py and ./lp_printer.py were both programs written to test stuff, use at your own risk, I provide no documentation for them</li>
+</ul><br>
+
+<h2>Some final words</h2>
+<p>I am a student, my programming skills are obviously not going to be perfect and the code I have written...isn't great and is mostly copy pasted from other sources but hey, it works for me and I thought that I'd share it with the world and see if it helps anyone else.<br>
+That being said, I do permit anyone to use this code for inspiration or to help them with whatever they need, if it works then who am I to complain; I couldn't find anything like this when I needed it, so I solved the problem myself and in the process hopefully saving some time for others.</p>  
