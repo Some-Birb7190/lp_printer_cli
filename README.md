@@ -64,7 +64,7 @@ pyprint [-h] [-q] [-i] [-b] [-nc] Content<br>
 Content : The file/text you want to be printed/encoded<br>
 <br>
 
-<h2>notes</h2>
+<h2>Notes</h2>
 <ul>
     <li>By default, will just print out Content with standard line wrapping</li>
     <li>[-i] and [-q] cannot be passed at the same time, you cannot encode an image in a QR code</li>
