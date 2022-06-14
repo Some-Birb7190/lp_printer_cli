@@ -57,7 +57,7 @@ pyprint [-h] [-q] [-i] [-b] [-nc] Content<br>
 <br>
 -h  : Displays the help message<br>
 -q  : Encodes "Content" inside a QR code and prints it<br>
--i  : Takes a file path from "Content" to an image and print it (gets a bit dodgy with large images)<br>
+-i  : Takes a file path from "Content" to an image, re-scales it to fit on 384px wide paper (and rotates if necessary) and prints it accordingly (goes haywire if the height of the original image is very small comparatively to the width.)<br>
 -b  : Encodes "Content" inside a barcode (CODE128) and prints it. It will also print the encoded text below the code<br>
 -nc : Pass to not carriage return and cut the paper after printing<br>
 <br>
@@ -72,7 +72,8 @@ Content : The file/text you want to be printed/encoded<br>
     <li>[-b] and [-q] cannot be passed at the same time, you cannot print both off at once</li>
     <li>The max string length for barcodes is 8 characters (for 57mm paper)</li>
     <li>If [-nc] is passed as well as [-q] or [-b], they will both override [-nc] as they require properly finishing the print</li>
-    <li>./(PYUSB)_usb_receipt_printer_demo.py and ./lp_printer.py were both programs written to test stuff, use at your own risk, I provide no documentation for them</li>
+    <li>./(PYUSB)_usb_receipt_printer_demo.py and ./lp_printer.py are both programs written to test stuff, use at your own risk, I provide no documentation for them</li>
+    <li>Printing an image requires permissions to read/write in the folder you are executing "pyprint" from due to temporary file writing when re-scaling the image you are printing.</li>
 </ul><br>
 
 <h2>Some final words</h2>

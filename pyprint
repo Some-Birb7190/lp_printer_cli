@@ -1,12 +1,50 @@
 #!/bin/env python3
 # Built using https://github.com/python-escpos/python-escpos library
 
-from fcntl import F_SEAL_SEAL
 from escpos.printer import Usb
+from PIL import Image
 import argparse
 import sys
 import dotenv
 import os
+
+def image_gen(file): # The function to generate and scale the given image
+    img = "" # Just to save me with this try and catch
+
+    try: # Try to find the image specified 
+        img = Image.open(file)
+    except:
+        print("Failed to find specified image")
+        sys.exit(2) # A generic non 0 exit code
+
+
+    # Image found, great, get some info about it
+    width, height = img.size
+
+    # Next, decide if it needs to be rotated and act accordingly
+    if (width > height): # Is the width of the image longer?
+        print("Rotating image...") # The longer side should be the height, so it needs to be rotated
+        # Transpose the image and rotate it
+        edit = img.transpose(Image.ROTATE_90)
+        # Rescale it
+        width, height = height, width # The image has been rotated, swap the axis
+        dimensions = (int(width*(384/width)), int(height*(384/width))) 
+        edit = edit.resize(dimensions)
+
+    else: # it does not need rotating
+        dimensions = (int(width*(384/width)), int(height*(384/width))) 
+        edit = img.resize(dimensions)
+
+    # Finish and save
+    try: # the user may not have the ability to do this in the current folder
+        edit.save("./tmp.png") # you need permission to do this, see docs
+        edit.close()
+    except:
+        print("Failed to save temporary rescaled images. See docs for possible problems.")
+        sys.exit(2) # A generic non 0 exit code
+    # End of procedure
+    return()
+
 
 parser = argparse.ArgumentParser(description="Program to print silly little things off to silly little printer. By default will just print off Content.")
 parser.add_argument('-q', help="Print off a QR code of the Content.", action='store_true')
@@ -34,9 +72,15 @@ PRODUCT=(os.environ['ID_PRODUCT'])
 INEP=(os.environ['IN_EP'])
 OUEP=(os.environ['OUT_EP'])
 
-# initialise the device over usb
-device = Usb(idVendor=int(VENDOR, 16), idProduct=int(PRODUCT, 16), timeout=0, in_ep=int(INEP, 16), out_ep=int(OUEP, 16))
+# try to initialise the device over usb
+device = "" # just to make my life a little easier when it comes to later programming
 
+try:
+    device = Usb(idVendor=int(VENDOR, 16), idProduct=int(PRODUCT, 16), timeout=0, in_ep=int(INEP, 16), out_ep=int(OUEP, 16)) # try to find and initialize the printer
+
+except: # this may happen due to incorrect parameters for the printer, or it is not online/plugged in
+    print("Failed to initialize the printer, check it's plugged in and your parameters are set correctly.")
+    sys.exit(2) # a different generic non 0 exit code
 # doing text
 #device.text("Hello\n")
 
@@ -49,8 +93,11 @@ device = Usb(idVendor=int(VENDOR, 16), idProduct=int(PRODUCT, 16), timeout=0, in
 # making qr code
 #device.qr(content="You are gay", size=10, model=2)
 
-if (args.i == True): # only args.i should be true by this point
-    device.image(str(args.Content))
+if (args.i == True): # Only args.i should be true by this point
+    image_gen(args.Content) # Generate the image to be printed and scale it
+    device.image("./tmp.png") # It will always be this file, send it to the printer
+    os.system("rm -f ./tmp.png") # delete it, now done with it
+    args.nc = False
 
 elif (args.q == True): # does the user want to print a qr code of content
     device.qr(content=str(args.Content), size=10, model=2)
