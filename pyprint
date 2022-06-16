@@ -3,11 +3,85 @@
 
 from escpos.printer import Usb
 from PIL import Image
+from pdf2image import convert_from_path
 import argparse
 import sys
 import dotenv
 import os
 
+def sorting_key(x): # A function to define the key to sort by for files, they need to be sorted numerically, not alphabetically
+    pref = ""
+    # Work forwards from the start of the string for the filename starting bit
+    for i in range(len(x)):
+        if (x[(i+1)] == "."): # If there is a . we know we have hit the file extension
+            pref = x[:i+1] # State the beginning of the file up to but not including the .
+            break
+        else: # It's not a .
+            pass
+        # End if
+    # End for
+    return(int(pref))
+
+def pdf_print(path):
+    # Check that the path exists
+    try: # Try to load the file 
+        images = convert_from_path(path) # Create a something of all the images
+    except:
+        print("Failed to load file from Path, check you entered it correctly.")
+        sys.exit(1)
+
+    else: # So it is a pdf file, now find what to name the folder, based on the .pdf file name
+        # Work backwards from the end of the string until you get to the / of the directory
+        folder = ""
+        if( "/" in path): # Is there even a / in the path
+            for i in range(4,len(path)): # We know by this point that the last 4 chars are ".pdf", so omit those
+                if (path[-(i+1)] == "/"): # If there is a /
+                    print("/ found, making folder...")
+                    folder = path[len(path)-i:] # Make a folder with everything up to but not including the /
+                    break
+                else: # It's not a /
+                    pass
+                # End if
+            # End for
+        else: # There is no / in the file
+            print("No / in folder path, making folder off of Path")
+            folder = path
+
+        # By this point, you should now have a folder template, using os:
+        folder = "IMG_" + folder
+        os.system("mkdir \"" + str(folder) + "\"")
+
+        # You now have the folder for images, split them out and save them <https://www.geeksforgeeks.org/convert-pdf-to-image-using-python/>
+        for i in range(len(images)): # For every image in the something of images
+            # Save them
+            print("Writing: " + str(folder) + "/" + str(i) + ".jpg")
+            images[i].save(str(folder) + "/" + str(i) + ".jpg", "JPEG")
+
+    # This is where I merge the two test programs, I hope this works
+    # Get all the files in the folder (We know it exists)
+    contents = os.listdir(folder) #A list of all contents in that folder (path from earlier that we used)
+
+    if (folder[len(folder) - 1] == "/"): # is there a trailing / at the end of Path
+        pass
+    else: # No
+        folder = folder + "/"
+
+    # sort the contents so that they are in order for printing
+    contents.sort(key=sorting_key) # This function makes no sense but it works so who am I to complain
+
+    counter = 0 # Just a Counter to make this last bit pretty for the user
+
+    for x in (contents):
+        print("Printing: " + str(x))
+
+        os.system("pyprint -i " + str(folder) + str(x))
+        if (counter != (len(contents) - 1)):
+            input("Tear paper and press enter to print next page")
+            counter += 1
+    
+    # All pages should have printed, tidy up
+    os.system("rm -rf " + str(folder))
+        
 def image_gen(file): # The function to generate and scale the given image
     img = "" # Just to save me with this try and catch
 
@@ -16,7 +90,6 @@ def image_gen(file): # The function to generate and scale the given image
     except:
         print("Failed to find specified image")
         sys.exit(2) # A generic non 0 exit code
-
 
     # Image found, great, get some info about it
     width, height = img.size
@@ -45,71 +118,79 @@ def image_gen(file): # The function to generate and scale the given image
     # End of procedure
     return()
 
-
 parser = argparse.ArgumentParser(description="Program to print silly little things off to silly little printer. By default will just print off Content.")
 parser.add_argument('-q', help="Print off a QR code of the Content.", action='store_true')
-parser.add_argument('-i', help="Print off an image from the path of Content (Can be a bit dodgy).", action='store_true')
+parser.add_argument('-i', help="Print off an image from the path of Content (can be a bit dodgy).", action='store_true')
 parser.add_argument('-b', help="Print off a barcode (CODE128) of Content (Can be a bit dodgy).", action='store_true')
+parser.add_argument('-p', help="Print off a pdf file from the path of Content.", action='store_true')
 parser.add_argument('-nc', help="Pass to not cut the paper after printing.", action='store_true')
 parser.add_argument("Content", type=str, help="The file/text you want to print/encode.")
 args = parser.parse_args()
 
-# validate arguments
-if (args.q == True and args.i == True): # cannot print image and qr code at once
-    print("You cannot print a QR code of an image.")
-    sys.exit(1) # generic non 0 exit code
-elif (args.b == True and args.i == True): # cannot print image and barcode at once
-    print("You cannot print a barcode of an image.")
-    sys.exit(1) # generic non 0 exit code
-elif (args.q == True and args.b == True): # canot print barcode and qr code at the same time
-    print("You cannot print a barcode and a QR code at the same time.")
-    sys.exit(1) # generic non 0 exit code
+# Validate arguments differently, somehow check that only one of the flags is passed
+argument_values = [] # Create a new list the value will go into
 
-# get printer values from .env file
+# Just manually add all of them I don't know how to iteratively do this
+argument_values.append(str(args.q))
+argument_values.append(str(args.i))
+argument_values.append(str(args.b))
+argument_values.append(str(args.p))
+
+# Does True show up more than once, if so, halt and alert the user, it can appear 0 times so cannot check !=, has to be >
+if (argument_values.count("True") > 1):
+    print("You cannot print multiple items at once.")
+    sys.exit(1) # A generic non 0 exit code
+
+# Get printer values from .env file
 config = dotenv.load_dotenv(dotenv.find_dotenv())
 VENDOR=(os.environ['ID_VENDOR'])
 PRODUCT=(os.environ['ID_PRODUCT'])
 INEP=(os.environ['IN_EP'])
 OUEP=(os.environ['OUT_EP'])
 
-# try to initialise the device over usb
-device = "" # just to make my life a little easier when it comes to later programming
+# Try to initialise the device over usb
+device = "" # Just to make my life a little easier when it comes to later programming
 
 try:
     device = Usb(idVendor=int(VENDOR, 16), idProduct=int(PRODUCT, 16), timeout=0, in_ep=int(INEP, 16), out_ep=int(OUEP, 16)) # try to find and initialize the printer
 
-except: # this may happen due to incorrect parameters for the printer, or it is not online/plugged in
+except: # This may happen due to incorrect parameters for the printer, or it is not online/plugged in
     print("Failed to initialize the printer, check it's plugged in and your parameters are set correctly.")
     sys.exit(2) # a different generic non 0 exit code
 # doing text
 #device.text("Hello\n")
 
 # doing barcodes
-#device.barcode(code="boob", bc="CODE128", function_type="B", height=64, width=4)
+#device.barcode(code="test", bc="CODE128", function_type="B", height=64, width=4)
 
 # doing images
-#device.image("/home/hbirb/birb.ico")
+#device.image("/home/test/test")
 
 # making qr code
-#device.qr(content="You are gay", size=10, model=2)
+#device.qr(content="test", size=10, model=2)
 
-if (args.i == True): # Only args.i should be true by this point
+# Only one or no arguments should be true by this point
+if (args.i == True): 
     image_gen(args.Content) # Generate the image to be printed and scale it
     device.image("./tmp.png") # It will always be this file, send it to the printer
-    os.system("rm -f ./tmp.png") # delete it, now done with it
+    os.system("rm -f ./tmp.png") # Delete it, now done with it
     args.nc = False
 
 elif (args.q == True): # does the user want to print a qr code of content
     device.qr(content=str(args.Content), size=10, model=2)
     args.nc = False
 
-elif (args.b == True): # do they also want to print a barcode of content
+elif (args.b == True): # do they want to print a barcode of content
     if (len(args.Content) > 5):
         w = 3
     else:
         w = 4
     device.barcode(code=str(args.Content), bc="CODE128", function_type="B", height=64, width=w)
     args.nc = False
+
+elif (args.p == True): # do they want to print off the pdf
+    pdf_print(args.Content) # Look at the function, it's too complex to explain simply
+    args.nc = True
 
 else: # they dont want to print any barcodes or anything, just output the Content
     device.text(str(args.Content) + "\n")

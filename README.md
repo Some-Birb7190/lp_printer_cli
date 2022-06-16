@@ -1,7 +1,7 @@
 <h1>A program to send ESC/POS commands to a usb device</h1>
 <p>All this program (./pyprint) does is send out basic ESC/POS commands to a printer connected over usb, with the use of external libraries.<br>
 It was made on and is designed for Linux as that is where the problem lay, I couldn't find a unified program to send things out to these printers...so I wrote my own.<br>
-All my testing was done on a generic 57mm printer, nothing special, just something cheap off of Amazon. <b>Please do not submit issues saying it doesn't work with your printer, I won't know how to help.</b></p><br>
+All my testing was done on a generic 58mm printer, nothing special, just something cheap off of Amazon. <b>Please do not submit issues saying it doesn't work with your printer, I won't know how to help.</b></p><br>
 
 <h2>Pre-Requisites</h2>
 <p>For this program, you will need:</p>
@@ -12,6 +12,8 @@ All my testing was done on a generic 57mm printer, nothing special, just somethi
     <li>python-qrcode - <a>https://github.com/lincolnloop/python-qrcode</a></li>
     <li>pyserial (for serial devices) - <a>https://github.com/lincolnloop/python-qrcode</a></li>
     <li>python-barcode - <a>https://github.com/WhyNotHugo/python-barcode</a></li>
+    <li>pdf2image - <a>https://github.com/Belval/pdf2image</a></li>
+    <li>python-dotenv - <a>https://github.com/theskumar/python-dotenv/</a></li>
     <li>python-escpos - <a>https://github.com/python-escpos/python-escpos</a></li>
 </ul><br>
 
@@ -53,12 +55,13 @@ All my testing was done on a generic 57mm printer, nothing special, just somethi
 
 
 <h2>Usage</h2>
-pyprint [-h] [-q] [-i] [-b] [-nc] Content<br>
+pyprint [-h] [-q] [-i] [-b] [-p] [-nc] Content<br>
 <br>
 -h  : Displays the help message<br>
 -q  : Encodes "Content" inside a QR code and prints it<br>
 -i  : Takes a file path from "Content" to an image, re-scales it to fit on 384px wide paper (and rotates if necessary) and prints it accordingly (goes haywire if the height of the original image is very small comparatively to the width.)<br>
 -b  : Encodes "Content" inside a barcode (CODE128) and prints it. It will also print the encoded text below the code<br>
+-p  : Takes a file path from "Content" to a pdf, converts all the pages and recursively prints them with the above image feature<br>
 -nc : Pass to not carriage return and cut the paper after printing<br>
 <br>
 Content : The file/text you want to be printed/encoded<br>
@@ -67,13 +70,11 @@ Content : The file/text you want to be printed/encoded<br>
 <h2>Notes</h2>
 <ul>
     <li>By default, will just print out Content with standard line wrapping</li>
-    <li>[-i] and [-q] cannot be passed at the same time, you cannot encode an image in a QR code</li>
-    <li>[-i] and [-b] cannot be passed at the same time, you cannot encode an image in a Barcode</li>
-    <li>[-b] and [-q] cannot be passed at the same time, you cannot print both off at once</li>
-    <li>The max string length for barcodes is 8 characters (for 57mm paper)</li>
-    <li>If [-nc] is passed as well as [-q] or [-b], they will both override [-nc] as they require properly finishing the print</li>
+    <li>You can only print off one thing at once, passing multiple flags will throw an error</li>
+    <li>The max string length for barcodes is 8 characters (for 58mm paper)</li>
+    <li>If [-nc] is passed as well as the optional flags ([-q], [-i], [-b], [-p]), they will all override [-nc] as they require properly finishing the print</li>
     <li>./(PYUSB)_usb_receipt_printer_demo.py and ./lp_printer.py are both programs written to test stuff, use at your own risk, I provide no documentation for them</li>
-    <li>Printing an image requires permissions to read/write in the folder you are executing "pyprint" from due to temporary file writing when re-scaling the image you are printing.</li>
+    <li>Printing an image or pdf requires permissions to read/write in the folder you are executing "pyprint" from due to temporary file writing when re-scaling the image you are printing.</li>
 </ul><br>
 
 <h2>Some final words</h2>
