@@ -21,7 +21,7 @@ All my testing was done on a generic 58mm printer, nothing special, just somethi
 <ol>
     <li>Clone repository</li>
     <ul>
-        <li><p>Run "git clone https://git.birb.not.hpkns.uk/hbirb/lp_printer.git && cd lp_printer"</p></li>
+        <li><p>Run "git clone https://git.birb.not.hpkns.uk/hbirb/lp_printer.git && cd lp_printer" OR "git clone https://github.com/Some-Birb7190/lp_printer.git && cd lp_printer"</p></li>
     </ul>
     <li>Install pre-requisites:</li>
     <ul>
