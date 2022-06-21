@@ -1,5 +1,5 @@
 #!/bin/env python3
-# Built using https://github.com/python-escpos/python-escpos library
+# Built mainly using https://github.com/python-escpos/python-escpos library
 
 from escpos.printer import Usb
 from PIL import Image
@@ -9,6 +9,7 @@ import sys
 import dotenv
 import os
 
+# Below are some functions that just make the document look nicer and separate things out a little bit
 def sorting_key(x): # A function to define the key to sort by for files, they need to be sorted numerically, not alphabetically
     pref = ""
     # Work forwards from the start of the string for the filename starting bit
@@ -22,7 +23,7 @@ def sorting_key(x): # A function to define the key to sort by for files, they ne
     # End for
     return(int(pref))
 
-def pdf_print(path):
+def pdf_print(path): # The function to strip and temporarily write pdf documents
     # Check that the path exists
     try: # Try to load the file 
         images = convert_from_path(path) # Create a something of all the images
@@ -74,7 +75,7 @@ def pdf_print(path):
     for x in (contents):
         print("Printing: " + str(x))
 
-        os.system("pyprint -i " + str(folder) + str(x))
+        os.system("pyprint -i \"" + str(folder) + str(x) + "\"")
         if (counter != (len(contents) - 1)):
             input("Tear paper and press enter to print next page")
             counter += 1
@@ -118,28 +119,35 @@ def image_gen(file): # The function to generate and scale the given image
     # End of procedure
     return()
 
-parser = argparse.ArgumentParser(description="Program to print silly little things off to silly little printer. By default will just print off Content.")
-parser.add_argument('-q', help="Print off a QR code of the Content.", action='store_true')
-parser.add_argument('-i', help="Print off an image from the path of Content (can be a bit dodgy).", action='store_true')
-parser.add_argument('-b', help="Print off a barcode (CODE128) of Content (Can be a bit dodgy).", action='store_true')
-parser.add_argument('-p', help="Print off a pdf file from the path of Content.", action='store_true')
-parser.add_argument('-nc', help="Pass to not cut the paper after printing.", action='store_true')
-parser.add_argument("Content", type=str, help="The file/text you want to print/encode.")
-args = parser.parse_args()
+def argument_parsing(): # The function to generate any given arguments
+    parser = argparse.ArgumentParser(description="Program to print silly little things off to silly little printer. By default will just print off Content.")
+    parser.add_argument('-q', help="Print off a QR code of the Content.", action='store_true')
+    parser.add_argument('-i', help="Print off an image from the path of Content (can be a bit dodgy).", action='store_true')
+    parser.add_argument('-b', help="Print off a barcode (CODE128) of Content (Can be a bit dodgy).", action='store_true')
+    parser.add_argument('-p', help="Print off a pdf file from the path of Content.", action='store_true')
+    parser.add_argument('-f', help="Print off a plain text file from the path of Content.", action='store_true')
+    parser.add_argument('-nc', help="Pass to not cut the paper after printing.", action='store_true')
+    parser.add_argument("Content", type=str, help="The file/text you want to print/encode.")
+    args = parser.parse_args()
 
-# Validate arguments differently, somehow check that only one of the flags is passed
-argument_values = [] # Create a new list the value will go into
+    # Validate arguments differently, somehow check that only one of the flags is passed
+    argument_values = [] # Create a new list the value will go into
 
-# Just manually add all of them I don't know how to iteratively do this
-argument_values.append(str(args.q))
-argument_values.append(str(args.i))
-argument_values.append(str(args.b))
-argument_values.append(str(args.p))
+    # Just manually add all of them I don't know how to iteratively do this
+    argument_values.append(str(args.q))
+    argument_values.append(str(args.i))
+    argument_values.append(str(args.b))
+    argument_values.append(str(args.p))
 
-# Does True show up more than once, if so, halt and alert the user, it can appear 0 times so cannot check !=, has to be >
-if (argument_values.count("True") > 1):
-    print("You cannot print multiple items at once.")
-    sys.exit(1) # A generic non 0 exit code
+    # Does True show up more than once, if so, halt and alert the user, it can appear 0 times so cannot check !=, has to be >
+    if (argument_values.count("True") > 1):
+        print("You cannot print multiple items at once.")
+        sys.exit(1) # A generic non 0 exit code
+
+    return(args)
+
+# Get args
+args = argument_parsing()
 
 # Get printer values from .env file
 config = dotenv.load_dotenv(dotenv.find_dotenv())
@@ -191,6 +199,13 @@ elif (args.b == True): # do they want to print a barcode of content
 elif (args.p == True): # do they want to print off the pdf
     pdf_print(args.Content) # Look at the function, it's too complex to explain simply
     args.nc = True
+
+elif (args.f == True): # Do they want to print off a plain text file
+    file = open(args.Content, "r") # Open the file from Content
+    text = file.read() # Read it
+    file.close() # Close it
+
+    device.text(text) # Print it to the device
 
 else: # they dont want to print any barcodes or anything, just output the Content
     device.text(str(args.Content) + "\n")

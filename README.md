@@ -55,13 +55,14 @@ All my testing was done on a generic 58mm printer, nothing special, just somethi
 
 
 <h2>Usage</h2>
-pyprint [-h] [-q] [-i] [-b] [-p] [-nc] Content<br>
+pyprint [-h] [-q] [-i] [-b] [-p] [-f] [-nc] Content<br>
 <br>
 -h  : Displays the help message<br>
 -q  : Encodes "Content" inside a QR code and prints it<br>
 -i  : Takes a file path from "Content" to an image, re-scales it to fit on 384px wide paper (and rotates if necessary) and prints it accordingly (goes haywire if the height of the original image is very small comparatively to the width.)<br>
 -b  : Encodes "Content" inside a barcode (CODE128) and prints it. It will also print the encoded text below the code<br>
 -p  : Takes a file path from "Content" to a pdf, converts all the pages and recursively prints them with the above image feature<br>
+-f  : Take a plain text file path from "Content" and prints it out with standard line wrapping<br>
 -nc : Pass to not carriage return and cut the paper after printing<br>
 <br>
 Content : The file/text you want to be printed/encoded<br>
