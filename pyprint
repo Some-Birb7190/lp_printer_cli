@@ -23,6 +23,42 @@ def sorting_key(x): # A function to define the key to sort by for files, they ne
     # End for
     return(int(pref))
 
+def image_gen(file): # The function to generate and scale the given image
+    img = "" # Just to save me with this try and catch
+
+    try: # Try to find the image specified 
+        img = Image.open(file)
+    except:
+        print("Failed to find specified image")
+        sys.exit(2) # A generic non 0 exit code
+
+    # Image found, great, get some info about it
+    width, height = img.size
+
+    # Next, decide if it needs to be rotated and act accordingly
+    if (width > height): # Is the width of the image longer?
+        print("Rotating image...") # The longer side should be the height, so it needs to be rotated
+        # Transpose the image and rotate it
+        edit = img.transpose(Image.ROTATE_90)
+        # Rescale it
+        width, height = height, width # The image has been rotated, swap the axis
+        dimensions = (int(width*(384/width)), int(height*(384/width))) 
+        edit = edit.resize(dimensions)
+
+    else: # it does not need rotating
+        dimensions = (int(width*(384/width)), int(height*(384/width))) 
+        edit = img.resize(dimensions)
+
+    # Finish and save
+    try: # the user may not have the ability to do this in the current folder
+        edit.save("./tmp.png") # you need permission to do this, see docs
+        edit.close()
+    except:
+        print("Failed to save temporary rescaled images. See docs for possible problems.")
+        sys.exit(2) # A generic non 0 exit code
+    # End of procedure
+    return()
+
 def pdf_print(path): # The function to strip and temporarily write pdf documents
     # Check that the path exists
     try: # Try to load the file 
@@ -72,53 +108,24 @@ def pdf_print(path): # The function to strip and temporarily write pdf documents
 
     counter = 0 # Just a Counter to make this last bit pretty for the user
 
+    cwd = os.getcwd() # Get the current working directory
+
     for x in (contents):
         print("Printing: " + str(x))
 
-        os.system("pyprint -i \"" + str(folder) + str(x) + "\"")
+        #device.image(str(str(cwd) + "/" + str(folder) + str(x)))
+        image_gen(str(str(cwd) + "/" + str(folder) + str(x))) # Generate the image to be printed and scale it
+        device.image("./tmp.png") # It will always be this file, send it to the printer
+        os.system("rm -f ./tmp.png") # Delete it, now done with it
+
+
         if (counter != (len(contents) - 1)):
             input("Tear paper and press enter to print next page")
             counter += 1
     
     # All pages should have printed, tidy up
     os.system("rm -rf " + str(folder))
-        
-def image_gen(file): # The function to generate and scale the given image
-    img = "" # Just to save me with this try and catch
-
-    try: # Try to find the image specified 
-        img = Image.open(file)
-    except:
-        print("Failed to find specified image")
-        sys.exit(2) # A generic non 0 exit code
-
-    # Image found, great, get some info about it
-    width, height = img.size
-
-    # Next, decide if it needs to be rotated and act accordingly
-    if (width > height): # Is the width of the image longer?
-        print("Rotating image...") # The longer side should be the height, so it needs to be rotated
-        # Transpose the image and rotate it
-        edit = img.transpose(Image.ROTATE_90)
-        # Rescale it
-        width, height = height, width # The image has been rotated, swap the axis
-        dimensions = (int(width*(384/width)), int(height*(384/width))) 
-        edit = edit.resize(dimensions)
-
-    else: # it does not need rotating
-        dimensions = (int(width*(384/width)), int(height*(384/width))) 
-        edit = img.resize(dimensions)
-
-    # Finish and save
-    try: # the user may not have the ability to do this in the current folder
-        edit.save("./tmp.png") # you need permission to do this, see docs
-        edit.close()
-    except:
-        print("Failed to save temporary rescaled images. See docs for possible problems.")
-        sys.exit(2) # A generic non 0 exit code
-    # End of procedure
-    return()
-
+    
 def argument_parsing(): # The function to generate any given arguments
     parser = argparse.ArgumentParser(description="Program to print silly little things off to silly little printer. By default will just print off Content.")
     parser.add_argument('-q', help="Print off a QR code of the Content.", action='store_true')
