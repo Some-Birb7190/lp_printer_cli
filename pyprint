@@ -8,6 +8,7 @@ import argparse
 import sys
 import dotenv
 import os
+import time
 
 # Below are some functions that just make the document look nicer and separate things out a little bit
 def sorting_key(x): # A function to define the key to sort by for files, they need to be sorted numerically, not alphabetically
@@ -29,7 +30,7 @@ def image_gen(file): # The function to generate and scale the given image
     try: # Try to find the image specified 
         img = Image.open(file)
     except:
-        print("Failed to find specified image")
+        print("Failed to print specified image")
         sys.exit(2) # A generic non 0 exit code
 
     # Image found, great, get some info about it
