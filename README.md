@@ -55,7 +55,7 @@ All my testing was done on a generic 58mm printer, nothing special, just somethi
 
 
 <h2>Usage</h2>
-pyprint [-h] [-q] [-i] [-b] [-p] [-f] [-nc] Content<br>
+pyprint [-h | -q | -i | -b | -p | -f] [-nc] Content<br>
 <br>
 -h  : Displays the help message<br>
 -q  : Encodes "Content" inside a QR code and prints it<br>
@@ -85,4 +85,4 @@ Content : The file/text you want to be printed/encoded<br>
 
 <h2>Some final words</h2>
 <p>I am a student, my programming skills are obviously not going to be perfect and the code I have written...isn't great and is mostly copy pasted from other sources but hey, it works for me and I thought that I'd share it with the world and see if it helps anyone else.<br>
-That being said, I do permit anyone to use this code for inspiration or to help them with whatever they need, if it works then who am I to complain; I couldn't find anything like this when I needed it, so I solved the problem myself and in the process hopefully saving some time for others.</p>  
+That being said, I do permit anyone (within terms of the MIT license) to use this code for inspiration or to help them with whatever they need, if it works then who am I to complain; I couldn't find anything like this when I needed it, so I solved the problem myself and in the process hopefully saving some time for others.</p>  
