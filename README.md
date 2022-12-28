@@ -29,7 +29,7 @@ All my testing was done on a generic 58mm printer, nothing special, just somethi
     </ul>
     <li>Set up environmental variables</li>
     <ul>
-        <li><p>First open .env.example and a terminal. Run "lsusb" and find the device you are using. You should have a like that looks like this:<br>
+        <li><p>First open .env.example and a terminal. Run "lsusb" and find the device you are using. You should have a list that looks like this:<br>
         "Bus 003 Device 085: ID 0416:5011 Winbond Electronics Corp. Virtual Com Port"<br>
         The number before the colon (EG 0416), place that after the "0x" on the line "ID_VENDOR" in ".env.example". The number after the colon (EG 5011) place after the "0x" on the next line down.</p></li>
         <li><p>Then in the terminal, run "lusb -v", this will give a long output so be prepared.<br>
@@ -76,6 +76,7 @@ Content : The file/text you want to be printed/encoded<br>
     <li>If [-nc] is passed as well as the optional flags ([-q], [-i], [-b], [-p]), they will all override [-nc] as they require properly finishing the print</li>
     <li>./(PYUSB)_usb_receipt_printer_demo.py and ./lp_printer.py are both programs written to test stuff, use at your own risk, I provide no documentation for them</li>
     <li>Printing an image or pdf requires permissions to read/write in the folder you are executing "pyprint" from due to temporary file writing when re-scaling the image you are printing.</li>
+    <li>The .env file needs to be located in the same directory as the file you are using, should you have it installed globally then this will do that for you.</li>
 </ul><br>
 
 <h2>Known Issues</h2>
