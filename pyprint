@@ -8,9 +8,9 @@ import argparse
 import sys
 import dotenv
 import os
-#import time
+# import time
 
-# Below are some functions that just make the document look nicer and separate things out a little bit
+# Below are some functions that just make the code look nicer and make different sections more obvious
 
 def image_gen(file): # The function to generate and scale the given image
     img = "" # Just to save me with this try and catch
@@ -27,6 +27,9 @@ def image_gen(file): # The function to generate and scale the given image
 
     # Obtained image, great, get some info about it
     width, height = img.size
+    
+    # Convert the image to a standard RGB format
+    img = img.convert('RGB')
 
     # Next, decide if it needs to be rotated and act accordingly
     if (width > height): # Is the width of the image longer?
@@ -132,8 +135,7 @@ args = argument_parsing()
 
 # Only one or no arguments should be true by this point
 if (args.i == True): 
-    device.image(image_gen(args.Content)) # Print the image generated directly from the function
-    os.system("rm -f ./tmp.png") # Delete it, now done with it
+    device.image(image_gen(args.Content), impl="bitImageRaster") # Print the image generated directly from the function
     args.nc = False
 
 elif (args.q == True): # does the user want to print a qr code of content

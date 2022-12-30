@@ -10,7 +10,7 @@ All my testing was done on a generic 58mm printer, nothing special, just somethi
     <li>pyusb - <a>https://github.com/walac/pyusb</a></li>
     <li>Pillow - <a>https://github.com/python-pillow/Pillow</a></li>
     <li>python-qrcode - <a>https://github.com/lincolnloop/python-qrcode</a></li>
-    <li>pyserial (for serial devices) - <a>https://github.com/lincolnloop/python-qrcode</a></li>
+    <li>pyserial (for serial devices) - <a>https://github.com/pyserial/pyserial</a></li>
     <li>python-barcode - <a>https://github.com/WhyNotHugo/python-barcode</a></li>
     <li>pdf2image - <a>https://github.com/Belval/pdf2image</a></li>
     <li>python-dotenv - <a>https://github.com/theskumar/python-dotenv/</a></li>
@@ -48,9 +48,9 @@ All my testing was done on a generic 58mm printer, nothing special, just somethi
     <ul>
         <li><p>If you are indeed on a Linux system, then you can install this mini program globally.<br>
         Run "sudo ln -s /path/to/pyprint /usr/local/bin/pyprint && sudo ln -s /path/to/.env /usr/local/bin/.env"<br>
-        This will create two symlinks directly to the pyprint program and the .env file. If you move the source files though, the link will break and you will have to redo it.</p></li>
+        This will create two symlinks directly to the pyprint program and the .env file. If you move the source files though, the link will break and you will have to redo it so make sure they are in a place where they won't get in the way.</p></li>
     </ul>
-    <li>Follow Usage steps</li>
+    <li>Follow Usage steps.</li>
 </ol><br>
 
 
@@ -75,13 +75,12 @@ Content : The file/text you want to be printed/encoded<br>
     <li>The max string length for barcodes is 8 characters (for 58mm paper)</li>
     <li>If [-nc] is passed as well as the optional flags ([-q], [-i], [-b], [-p]), they will all override [-nc] as they require properly finishing the print</li>
     <li>./(PYUSB)_usb_receipt_printer_demo.py and ./lp_printer.py are both programs written to test stuff, use at your own risk, I provide no documentation for them</li>
-    <li>Printing an image or pdf requires permissions to read/write in the folder you are executing "pyprint" from due to temporary file writing when re-scaling the image you are printing.</li>
     <li>The .env file needs to be located in the same directory as the file you are using, should you have it installed globally then this will do that for you.</li>
 </ul><br>
 
 <h2>Known Issues</h2>
     <ul>
-        <li>Currently, it does have some difficulties printing off images, I cannot figure out why</lo>
+        <li>Currently, it does have some difficulties printing off <i>some</i> images. I cannot figure out why this is. If you have any suggestions please submit an issue.</lo>
     </ul>
 
 <h2>Some final words</h2>
