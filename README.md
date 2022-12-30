@@ -32,7 +32,7 @@ All my testing was done on a generic 58mm printer, nothing special, just somethi
         <li><p>First open .env.example and a terminal. Run "lsusb" and find the device you are using. You should have a list that looks like this:<br>
         "Bus 003 Device 085: ID 0416:5011 Winbond Electronics Corp. Virtual Com Port"<br>
         The number before the colon (EG 0416), place that after the "0x" on the line "ID_VENDOR" in ".env.example". The number after the colon (EG 5011) place after the "0x" on the next line down.</p></li>
-        <li><p>Then in the terminal, run "lusb -v", this will give a long output so be prepared.<br>
+        <li><p>Then in the terminal, run "lsusb -v", this will give a long output so be prepared.<br>
         Find the device that matches the above credentials, and locate the line:<br>
         "bEndpointAddress     0x81  EP 1 IN" and make sure it's the line that says "IN". Place the value after the "0x" (EG 81) and place it after the "0x" in ".env.example", on the line "IN_EP"</p></li>
         <li></p>Next find the line that ends in "OUT", EG:<br>
