@@ -101,6 +101,10 @@ def argument_parsing(): # The function to generate any given arguments
 
 
 # START OF PROGRAM
+
+# Get args
+args = argument_parsing()
+
 # Get printer values from .env file
 config = dotenv.load_dotenv(dotenv.find_dotenv())
 VENDOR=(os.environ['ID_VENDOR'])
@@ -129,9 +133,6 @@ except: # This may happen due to incorrect parameters for the printer, or it is 
 
 # making qr code
 #device.qr(content="test", size=10, model=2)
-
-# Get args
-args = argument_parsing()
 
 # Only one or no arguments should be true by this point
 if (args.i == True): 
