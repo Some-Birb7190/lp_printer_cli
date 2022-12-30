@@ -8,32 +8,24 @@ import argparse
 import sys
 import dotenv
 import os
-import time
+#import time
 
 # Below are some functions that just make the document look nicer and separate things out a little bit
-def sorting_key(x): # A function to define the key to sort by for files, they need to be sorted numerically, not alphabetically
-    pref = ""
-    # Work forwards from the start of the string for the filename starting bit
-    for i in range(len(x)):
-        if (x[(i+1)] == "."): # If there is a . we know we have hit the file extension
-            pref = x[:i+1] # State the beginning of the file up to but not including the .
-            break
-        else: # It's not a .
-            pass
-        # End if
-    # End for
-    return(int(pref))
 
 def image_gen(file): # The function to generate and scale the given image
     img = "" # Just to save me with this try and catch
 
-    try: # Try to find the image specified 
-        img = Image.open(file)
-    except:
-        print("Failed to print specified image")
-        sys.exit(2) # A generic non 0 exit code
+    if file.format == "PPM": # If the argument passed *is* a pillow image itself, then we don't need to try to load it from a path
+        img = file
 
-    # Image found, great, get some info about it
+    else:
+        try: # Try to set the image specified
+            img = Image.open(file)
+        except:
+            print("Failed to print specified image")
+            sys.exit(2) # A generic non 0 exit code
+
+    # Obtained image, great, get some info about it
     width, height = img.size
 
     # Next, decide if it needs to be rotated and act accordingly
@@ -46,93 +38,43 @@ def image_gen(file): # The function to generate and scale the given image
         dimensions = (int(width*(384/width)), int(height*(384/width))) 
         edit = edit.resize(dimensions)
 
-    else: # it does not need rotating
+    else: # it does not need rotating, just scale it
         dimensions = (int(width*(384/width)), int(height*(384/width))) 
         edit = img.resize(dimensions)
 
-    # Finish and save
-    try: # the user may not have the ability to do this in the current folder
-        edit.save("./tmp.png") # you need permission to do this, see docs
-        edit.close()
-    except:
-        print("Failed to save temporary rescaled images. See docs for possible problems.")
-        sys.exit(2) # A generic non 0 exit code
-    # End of procedure
-    return()
+    # Transformations are done, return the edited file
+    return(edit) #return the image object and then just print that off
 
-def pdf_print(path): # The function to strip and temporarily write pdf documents
+
+def print_pdf(path):
     # Check that the path exists
     try: # Try to load the file 
-        images = convert_from_path(path) # Create a something of all the images
+        images = convert_from_path(path) # Create a list of all the images
     except:
         print("Failed to load file from Path, check you entered it correctly.")
-        sys.exit(1)
+        sys.exit(1) 
 
-    else: # So it is a pdf file, now find what to name the folder, based on the .pdf file name
-        # Work backwards from the end of the string until you get to the / of the directory
-        folder = ""
-        if( "/" in path): # Is there even a / in the path
-            for i in range(4,len(path)): # We know by this point that the last 4 chars are ".pdf", so omit those
-                if (path[-(i+1)] == "/"): # If there is a /
-                    print("/ found, making folder...")
-                    folder = path[len(path)-i:] # Make a folder with everything up to but not including the /
-                    break
-                else: # It's not a /
-                    pass
-                # End if
-            # End for
-        else: # There is no / in the file
-            print("No / in folder path, making folder off of Path")
-            folder = path
-
-        # By this point, you should now have a folder template, using os:
-        folder = "IMG_" + folder
-        os.system("mkdir \"" + str(folder) + "\"")
-
-        # You now have the folder for images, split them out and save them <https://www.geeksforgeeks.org/convert-pdf-to-image-using-python/>
-        for i in range(len(images)): # For every image in the something of images
-            # Save them
-            print("Writing: " + str(folder) + "/" + str(i) + ".jpg")
-            images[i].save(str(folder) + "/" + str(i) + ".jpg", "JPEG")
-
-    # This is where I merge the two test programs, I hope this works
-    # Get all the files in the folder (We know it exists)
-    contents = os.listdir(folder) #A list of all contents in that folder (path from earlier that we used)
-
-    if (folder[len(folder) - 1] == "/"): # is there a trailing / at the end of Path
-        pass
-    else: # No
-        folder = folder + "/"
-
-    # sort the contents so that they are in order for printing
-    contents.sort(key=sorting_key) # This function makes no sense but it works so who am I to complain
-
-    counter = 0 # Just a Counter to make this last bit pretty for the user
-
-    cwd = os.getcwd() # Get the current working directory
-
-    for x in (contents):
-        print("Printing: " + str(x))
-        
-        image_gen(str(str(cwd) + "/" + str(folder) + str(x))) # Generate the image to be printed and scale it
-        device.image("./tmp.png") # It will always be this file, send it to the printer
-        os.system("rm -f ./tmp.png") # Delete it, now done with it
+    scaled_images = [] # Instanciate a list for all of the scaled images
+    
+    for x in range(0, len(images)): # Run through each of the images and scale them
+        scaled_images.append(image_gen(images[0])) 
+ 
+    counter = 0 # A counter to help count 
+    for i in (scaled_images): # For each individual item in the list of scaled images
+        print("Printing page " + str(counter+1))# Tell the user which page it is printing based off of the counter
+        device.image(i, impl="graphics") # This is an image type, therefore it can just print it 
         device.cut()
 
-
-        if (counter != (len(contents) - 1)):
-            input("Tear paper and press enter to print next page")
+        if (counter != (len(scaled_images) - 1)):
+            input("Tear paper and press enter to print next page...")
             counter += 1
-    
-    # All pages should have printed, tidy up
-    os.system("rm -rf " + str(folder))
-    
+
 def argument_parsing(): # The function to generate any given arguments
     parser = argparse.ArgumentParser(description="Program to print silly little things off to silly little printer. By default will just print off Content.")
     parser.add_argument('-q', help="Print off a QR code of the Content.", action='store_true')
     parser.add_argument('-i', help="Print off an image from the path of Content (can be a bit dodgy).", action='store_true')
     parser.add_argument('-b', help="Print off a barcode (CODE128) of Content (Can be a bit dodgy).", action='store_true')
-    parser.add_argument('-p', help="Print off a pdf file from the path of Content.", action='store_true')
+    parser.add_argument('-p', help="Print off each page of a pdf file from the path of Content.", action='store_true')
     parser.add_argument('-f', help="Print off a plain text file from the path of Content.", action='store_true')
     parser.add_argument('-nc', help="Pass to not cut the paper after printing.", action='store_true')
     parser.add_argument("Content", type=str, help="The file/text you want to print/encode.")
@@ -154,9 +96,8 @@ def argument_parsing(): # The function to generate any given arguments
 
     return(args)
 
-# Get args
-args = argument_parsing()
 
+# START OF PROGRAM
 # Get printer values from .env file
 config = dotenv.load_dotenv(dotenv.find_dotenv())
 VENDOR=(os.environ['ID_VENDOR'])
@@ -173,6 +114,7 @@ try:
 except: # This may happen due to incorrect parameters for the printer, or it is not online/plugged in
     print("Failed to initialize the printer, check it's plugged in and your parameters are set correctly.")
     sys.exit(2) # a different generic non 0 exit code
+
 # doing text
 #device.text("Hello\n")
 
@@ -185,10 +127,12 @@ except: # This may happen due to incorrect parameters for the printer, or it is 
 # making qr code
 #device.qr(content="test", size=10, model=2)
 
+# Get args
+args = argument_parsing()
+
 # Only one or no arguments should be true by this point
 if (args.i == True): 
-    image_gen(args.Content) # Generate the image to be printed and scale it
-    device.image("./tmp.png") # It will always be this file, send it to the printer
+    device.image(image_gen(args.Content)) # Print the image generated directly from the function
     os.system("rm -f ./tmp.png") # Delete it, now done with it
     args.nc = False
 
@@ -205,7 +149,7 @@ elif (args.b == True): # do they want to print a barcode of content
     args.nc = False
 
 elif (args.p == True): # do they want to print off the pdf
-    pdf_print(args.Content) # Look at the function, it's too complex to explain simply
+    print_pdf(args.Content) # Look at the function, it's too complex to explain simply
     args.nc = True
 
 elif (args.f == True): # Do they want to print off a plain text file
