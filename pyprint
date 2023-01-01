@@ -136,7 +136,7 @@ except: # This may happen due to incorrect parameters for the printer, or it is 
 
 # Only one or no arguments should be true by this point
 if (args.i == True): 
-    device.image(image_gen(args.Content), impl="bitImageRaster") # Print the image generated directly from the function
+    device.image(image_gen(args.Content), impl="bitImageRaster", fragment_height=128) # Print the image generated directly from the function. Creds to Sam.S for helping me with this
     args.nc = False
 
 elif (args.q == True): # does the user want to print a qr code of content
