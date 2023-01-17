@@ -60,7 +60,7 @@ def print_pdf(path):
     scaled_images = [] # Instanciate a list for all of the scaled images
     
     for x in range(0, len(images)): # Run through each of the images and scale them
-        scaled_images.append(image_gen(images[0])) 
+        scaled_images.append(image_gen(images[x])) 
  
     counter = 0 # A counter to help count 
     for i in (scaled_images): # For each individual item in the list of scaled images
