@@ -38,16 +38,19 @@ def image_gen(file): # The function to generate and scale the given image
         edit = img.transpose(Image.ROTATE_90)
         # Rescale it
         width, height = height, width # The image has been rotated, swap the axis
-        dimensions = (int(width*(384/width)), int(height*(384/width))) 
-        edit = edit.resize(dimensions)
 
+    # Doesn't matter if the image has been rotated, scale it 
+    dimensions = (int(width*(384/width)), int(height*(384/width))) 
+    edit = edit.resize(dimensions)
+
+    ''' I'm keeping this code for testing
     else: # it does not need rotating, just scale it
         dimensions = (int(width*(384/width)), int(height*(384/width))) 
         edit = img.resize(dimensions)
-
+    '''
     # Transformations are done, return the edited file
     return(edit) #return the image object and then just print that off
-
+    
 
 def print_pdf(path):
     # Check that the path exists
@@ -65,7 +68,7 @@ def print_pdf(path):
     counter = 0 # A counter to help count 
     for i in (scaled_images): # For each individual item in the list of scaled images
         print("Printing page " + str(counter+1))# Tell the user which page it is printing based off of the counter
-        device.image(i, impl="graphics") # This is an image type, therefore it can just print it 
+        device.image(i) # This is an image type, therefore it can just print it 
         device.cut()
 
         if (counter != (len(scaled_images) - 1)):
