@@ -19,19 +19,19 @@ All my testing was done on a generic 58mm printer, nothing special, just somethi
 
 <h2>Installation</h2>
 <ol>
-    <li>Clone repository</li>
+    <li>Clone repository:</li>
     <ul>
-        <li><p>Run "git clone https://git.birb.not.hpkns.uk/hbirb/lp_printer.git && cd lp_printer" OR "git clone https://github.com/Some-Birb7190/lp_printer.git && cd lp_printer"</p></li>
+        <li><p>Run "git clone https://git.birb.not.hpkns.uk/hbirb/lp_printer_cli.git && cd lp_printer" OR "git clone https://github.com/Some-Birb7190/lp_printer.git && cd lp_printer"</p></li>
     </ul>
     <li>Install pre-requisites:</li>
     <ul>
         <li><p>You can do this manually by running "pip install pyusb", "pip install Pillow" etc, or run "pip install -r requirements.txt"</p></li>
     </ul>
-    <li>Set up environmental variables</li>
+    <li>Set up environmental variables:</li>
     <ul>
         <li><p>First open .env.example and a terminal. Run "lsusb" and find the device you are using. You should have a list that looks something like this (below is what my output looks like for my printer, yours will potentially be different):<br>
         "Bus 003 Device 085: ID 0416:5011 Winbond Electronics Corp. Virtual Com Port"<br>
-        The number before the colon (EG 0416), place that after the "0x" on the line "ID_VENDOR" in ".env.example". The number after the colon (EG 5011) place after the "0x" on the next line down.</p></li>
+        The number before the colon (EG 0416), place that after the "0x" on the line "ID_VENDOR" in ".env.example". The number after the colon (EG 5011) place after the "0x" on the next line down</p></li>
         <li><p>Then in the terminal, run "lsusb -v", this will give a long output so be prepared.<br>
         Find the device that matches the above credentials, and locate the line:<br>
         "bEndpointAddress     0x81  EP 1 IN" and make sure it's the line that says "IN". Place the value after the "0x" (EG 81) and place it after the "0x" in ".env.example", on the line "IN_EP"</p></li>
@@ -39,18 +39,19 @@ All my testing was done on a generic 58mm printer, nothing special, just somethi
         "bEndpointAddress     0x03  EP 3 OUT", and place the value after the "0x" (EG 03) on the last line of ".env.example"</p></li>
         <li><p>Finally, remove the ".example" off the end of the file, and you should be good to go</p></li>
     </ul>
-    <li>Enable certain permissions</li>
+    <li>Enable certain permissions:</li>
     <ul>
         <li><p>Because you are accessing the USB kernel on Linux, you need certain permissions.<br>
-        So in a terminal, run "sudo usermod -a -G lp [username]" which should do the trick.</p></li>
+        So in a terminal, run "sudo usermod -a -G lp [username]" which should do the trick</p></li>
+        <li><p>In order to run this program, you must run "chmod +x /path/to/pyprint" to make it executable</p></li>
     </ul>
-    <li>(Optionally) install globally</li>
+    <li>Install globally (optional):</li>
     <ul>
         <li><p>If you are indeed on a Linux system, then you can install this mini program globally.<br>
         Run "sudo ln -s /path/to/pyprint /usr/local/bin/pyprint && sudo ln -s /path/to/.env /usr/local/bin/.env"<br>
-        This will create two symlinks directly to the pyprint program and the .env file. If you move the source files though, the link will break and you will have to redo it so make sure they are in a place where they won't get in the way.</p></li>
+        This will create two symlinks directly to the pyprint program and the .env file. If you move the source files though, the link will break and you will have to re-run that code with the new absolute path. Try make sure they are in a place where they won't get in the way to avoid this issue</p></li>
     </ul>
-    <li>Follow Usage steps.</li>
+    <li>Follow Usage steps</li>
 </ol><br>
 
 
@@ -80,7 +81,7 @@ Content : The file/text you want to be printed/encoded<br>
 
 <h2>Known Issues</h2>
     <ul>
-        <lo>Nothing I know to be incorrect, please submit anything that is broken</lo>
+        <lo>There isn't anything to my knowlege :)</lo>
     </ul>
 
 <h2>Some final words</h2>

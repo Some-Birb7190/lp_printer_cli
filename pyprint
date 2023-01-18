@@ -35,13 +35,13 @@ def image_gen(file): # The function to generate and scale the given image
     if (width > height): # Is the width of the image longer?
         print("Rotating image...") # The longer side should be the height, so it needs to be rotated
         # Transpose the image and rotate it
-        edit = img.transpose(Image.ROTATE_90)
+        img = img.transpose(Image.ROTATE_90)
         # Rescale it
         width, height = height, width # The image has been rotated, swap the axis
 
     # Doesn't matter if the image has been rotated, scale it 
     dimensions = (int(width*(384/width)), int(height*(384/width))) 
-    edit = edit.resize(dimensions)
+    edit = img.resize(dimensions)
 
     ''' I'm keeping this code for testing
     else: # it does not need rotating, just scale it
@@ -76,7 +76,7 @@ def print_pdf(path):
             counter += 1
 
 def argument_parsing(): # The function to generate any given arguments
-    parser = argparse.ArgumentParser(description="Program to print silly little things off to silly little printer. By default will just print off Content.")
+    parser = argparse.ArgumentParser(prog="pyprint", description="Program to print silly little things off to silly little printer. By default will just print off Content.")
     parser.add_argument('-q', help="Print off a QR code of the Content.", action='store_true')
     parser.add_argument('-i', help="Print off an image from the path of Content (can be a bit dodgy).", action='store_true')
     parser.add_argument('-b', help="Print off a barcode (CODE128) of Content (Can be a bit dodgy).", action='store_true')
