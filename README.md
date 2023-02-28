@@ -1,4 +1,4 @@
-<h1>A program to send ESC/POS commands to a usb device</h1>
+<h1>A program to send ESC/POS commands to a USB receipt printer</h1>
 <p>All this program (./pyprint) does is send out basic ESC/POS commands to a printer connected over usb, with the use of external libraries.<br>
 It was made on and is designed for Linux as that is where the problem lay, I couldn't find a unified program to send things out to these printers...so I wrote my own.<br>
 All my testing was done on a generic 58mm printer, nothing special, just something cheap off of Amazon. <b>Please do not submit issues saying it doesn't work with your printer, I won't know how to help.</b> Please only submit issues that are recreatable and provide all supporting files that you used.</p><br>
@@ -6,7 +6,7 @@ All my testing was done on a generic 58mm printer, nothing special, just somethi
 <h2>Pre-Requisites</h2>
 <p>For this program, you will need:</p>
 <ul>
-    <li>Anything greater than Python 3 (made using Python 3.8.10)
+    <li>Anything greater than Python 3 (made using Python 3.8.10)</li>
     <li>pyusb - <a>https://github.com/walac/pyusb</a></li>
     <li>Pillow - <a>https://github.com/python-pillow/Pillow</a></li>
     <li>python-qrcode - <a>https://github.com/lincolnloop/python-qrcode</a></li>
