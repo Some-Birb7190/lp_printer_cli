@@ -78,18 +78,19 @@ def print_pdf(path):
             counter += 1
 
 def argument_parsing(): # The function to generate any given arguments
-    parser = argparse.ArgumentParser(prog="pyprint", description="Program to print silly little things off to silly little printer. By default will just print off Content.")
+    parser = argparse.ArgumentParser(prog="pyprint.py", description="Program to print silly little things off to silly little printer. By default will just print off Content.")
     parser.add_argument('-q', help="Print off a QR code of the Content", action='store_true')
     parser.add_argument('-i', help="Print off an image from the path of Content (can be a bit dodgy)", action='store_true')
     parser.add_argument('-b', help="Print off a barcode (CODE128) of Content (Can be a bit dodgy)", action='store_true')
     parser.add_argument('-p', help="Print off each page of a pdf file from the path of Content", action='store_true')
     parser.add_argument('-f', help="Print off a plain text file from the path of Content", action='store_true')
-    parser.add_argument('--align', help='Set the alignment for the text to print off', action='store_true')
+    # parser.add_argument('--align', help='Set the alignment for the text to print off', action='store_true')
     parser.add_argument('-nc', help="Pass to not cut the paper after printing", action='store_true')
     parser.add_argument("Content", type=str, help="The file/text you want to print/encode")
     args = parser.parse_args()
 
-    # Validate arguments differently, somehow check that only one of the flags is passed
+    # Argument validation
+    # somehow check that only one type of item is being printed at once
     argument_values = [] # Create a new list the value will go into
 
     # Just manually add all of them I don't know how to iteratively do this
@@ -97,10 +98,11 @@ def argument_parsing(): # The function to generate any given arguments
     argument_values.append(str(args.i))
     argument_values.append(str(args.b))
     argument_values.append(str(args.p))
+    argument_values.append(str(args.f))
 
     # Does True show up more than once, if so, stop and alert the user, it can appear 0 times so cannot check !=, has to be >
     if (argument_values.count("True") > 1):
-        print("You cannot print multiple items at once.")
+        print("You cannot print multiple types of things at once.")
         sys.exit(1) # A generic non 0 exit code
 
     return(args)
@@ -119,7 +121,7 @@ INEP=(os.environ['IN_EP'])
 OUEP=(os.environ['OUT_EP'])
 
 # Try to initialise the device over usb
-device = "" # Just to make my life a little easier when it comes to later programming
+device = "" # Just for this try and catch
 
 try:
     device = Usb(idVendor=int(VENDOR, 16), idProduct=int(PRODUCT, 16), timeout=0, in_ep=int(INEP, 16), out_ep=int(OUEP, 16)) # try to find and initialize the printer
@@ -128,29 +130,15 @@ except: # This may happen due to incorrect parameters for the printer, or it is 
     print("Failed to initialize the printer, check it's plugged in and your parameters are set correctly.")
     sys.exit(1)
 
-if args.center == True:
-    device.set(align="CENTER")
-
-# doing text
-#device.text("Hello\n")
-
-# doing barcodes
-#device.barcode(code="test", bc="CODE128", function_type="B", height=64, width=4)
-
-# doing images
-#device.image("/home/test/test")
-
-# making qr code
-#device.qr(content="test", size=10, model=2)
-
 # Only one or no arguments should be true by this point
+# I am sorry for people reading this, python does not have backwards compatible and nice to use switch blocs
 if (args.i == True): 
     device.image(image_gen(args.Content), impl="bitImageRaster", fragment_height=128) # Print the image generated directly from the function. Creds to Sam.S for helping me with this
-    args.nc = False
+    device.cut()
 
 elif (args.q == True): # Print a QR code
     device.qr(content=str(args.Content), size=10, model=2)
-    args.nc = False
+    device.cut()
 
 elif (args.b == True): # Print a barcode
     if (len(args.Content) > 5):
@@ -158,28 +146,32 @@ elif (args.b == True): # Print a barcode
     else:
         w = 4
     device.barcode(code=str(args.Content), bc="CODE128", function_type="B", height=64, width=w)
-    args.nc = False
+    device.cut()
 
 elif (args.p == True): # Print a PDF
     print_pdf(args.Content) # Look at the function, it's too complex to explain simply
-    args.nc = True
 
-elif (args.f == True): # Print a plain text file
-    file = open(args.Content, "r")
-    text = file.read()
-    file.close()
+# elif (args.f == True): # Print a plain text file
 
-    device.text(text)
+#     device.cut()
 
-else: # Just output Content
-    device.text(str(args.Content) + "\n")
+else: # By this point, it's either text or a file, both of which the user can decide if they want to cut it
 
-# End with carriage returning and cutting the paper if the user wants it
-if (args.nc == False):
-    device.cut()
+    if (args.f == True):
+        with open(args.Content, "r") as f:
+            text = f.read()
+            f.close()
+    else:
+        text = args.Content
+        
+    device.text(str(text) + "\n")
+
+    # End with carriage returning and cutting the paper if the user wants it
+    if (args.nc == False):
+        device.cut()
 
 # Reset the alignment
-device.set(align='LEFT')
+# device.set(align='LEFT')
 
 # Ensure to close the USB endpoint
 device.close()
