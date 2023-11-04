@@ -61,8 +61,7 @@ pyprint.py [-h | -q | -i | -b | -p | -f] [-nc] Content
 - By default, will just print out Content  
 - You can only print off one thing at once, passing multiple flags will throw an error  
 - The max string length for barcodes is 8 characters (for 58mm paper)  
-- [-nc] will only work when printing off a plain text file, or just text  
-- ./(PYUSB)_usb_receipt_printer_demo.py and ./lp_printer.py are both programs written to test stuff, use at your own risk, I provide no documentation for them  
+- [-nc] will only work when printing off a plain text file, or just text   
 - The .env file needs to be located in the same directory as any instance of pyprint, should you have it installed globally then this will do that for you  
 
 
