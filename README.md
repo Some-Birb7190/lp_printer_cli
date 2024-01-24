@@ -18,7 +18,7 @@ For this program, you will need:
   
 ## Installation  
 1. Clone repository:  
-    - Run "git clone https://git.birb.not.hpkns.uk/hbirb/lp_printer_cli.git && cd lp_printer" OR "git clone https://github.com/Some-Birb7190/lp_printer.git && cd lp_printer"  
+    - Run "git clone https://github.com/Some-Birb7190/lp_printer_cli.git && cd lp_printer_cli"  
 2. Install pre-requisites:  
     - You can do this manually by running "pip install pyusb", "pip install Pillow" etc, or run "pip install -r requirements.txt"  
 3. Set up environment variables:
