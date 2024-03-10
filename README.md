@@ -33,7 +33,7 @@ For this program, you will need:
     - Finally, remove the ".example" off the end of the file, and you should be good to go
 4. Enable certain permissions:  
     - Because you are accessing the USB socket on Linux, you need certain permissions.  
-    So in a terminal, run "sudo usermod -a -G lp [your username]" which should do the trick  
+    So in a terminal, run "sudo usermod -a -G lp [your username]" which should do the trick (Don'tforget to log out and log back in for this change to take effect)  
     - In order to run this program, you must run "chmod +x /path/to/pyprint.py" to make it executable  
 5. Install globally (optional):  
     - Assuming you are on a Linux system, then you can install this mini program globally.  
