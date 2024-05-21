@@ -1,6 +1,6 @@
 # A program to send ESC/POS commands to a USB receipt printer
 All this program (./pyprint.py) does is send out basic ESC/POS commands to a printer connected over usb, with the use of external libraries.  
-It was made on and is designed for Linux as that is where the problem lay, I couldn't find a unified program to send things out to these printers...so I wrote my own. **I will not provide support for people who wish to use this one windows.**  
+It was made on and is designed for Linux as that is where the problem lay, I couldn't find a unified program to send things out to these printers...so I wrote my own. **I will not provide support for people who wish to use this on Windows.**  
 All my testing was done on a generic 58mm printer, nothing special, just something cheap off of Amazon. Please do not submit issues saying it doesn't work with your printer, I won't know how to help. **Please only submit issues that are recreatable and provide all supporting files that you used.**  
 
 ## Pre-Requisites  
@@ -18,22 +18,22 @@ For this program, you will need:
   
 ## Installation  
 1. Clone repository:  
-    - Run "git clone https://github.com/Some-Birb7190/lp_printer_cli.git && cd lp_printer_cli"  
+    - Run `git clone https://github.com/Some-Birb7190/lp_printer_cli.git && cd lp_printer_cli`  
 2. Install pre-requisites:  
-    - You can do this manually by running "pip install pyusb", "pip install Pillow" etc, or run "pip install -r requirements.txt"  
+    - Run `pip install -r requirements.txt`  
 3. Set up environment variables:
-    - First open .env.example and a terminal. Run "lsusb" and find the device you are using. You should have a list that looks something like this (below is what my output looks like for my printer, yours will potentially be different):  
+    - First open .env.example and a terminal. Run `lsusb` and find the device you are using. You should have a list that looks something like this (below is what my output looks like for my printer, yours will potentially be different):  
     "Bus 003 Device 085: ID 0416:5011 Winbond Electronics Corp. Virtual Com Port"  
-    The number before the colon (EG 0416), place that after the "0x" on the line "ID_VENDOR" in ".env.example". The number after the colon (EG 5011) place after the "0x" on the next line down  
-    - Then in the terminal, run "lsusb -v", this will give a long output so be prepared.  
+    The number before the colon (EG 0416), place that after the "0x" on the line "ID_VENDOR" in `.env.example`. The number after the colon (EG 5011) place after the "0x" on the next line down  
+    - Then in the terminal, run `lsusb -v`, this will give a long output so be prepared.  
     Find the device that matches the above credentials, and locate the line:  
-    "bEndpointAddress     0x81  EP 1 IN" and make sure it's the line that says "IN". Place the value after the "0x" (EG 81) and place it after the "0x" in ".env.example", on the line "IN_EP"  
+    `bEndpointAddress     0x81  EP 1 IN`. Place the value after the "0" (EG 81) and place it after the "0x" in `.env.example`, on the line "IN_EP"  
     - Next find the line that ends in "OUT", EG:  
-    "bEndpointAddress     0x03  EP 3 OUT", and place the value after the "0x" (EG 03) on the last line of ".env.example"  
-    - Finally, remove the ".example" off the end of the file, and you should be good to go
+    `bEndpointAddress     0x03  EP 3 OUT`, and place the value after the "0x" (EG 03) on the last line of `.env.example`  
+    - Finally, remove the ".example" off the end of the file
 4. Enable certain permissions:  
     - Because you are accessing the USB socket on Linux, you need certain permissions.  
-    So in a terminal, run "sudo usermod -a -G lp [your username]" which should do the trick (Don'tforget to log out and log back in for this change to take effect)  
+    So in a terminal, run "sudo usermod -a -G lp [your username]" which should do the trick (Don't forget to log out and log back in for this change to take effect)  
     - In order to run this program, you must run "chmod +x /path/to/pyprint.py" to make it executable  
 5. Install globally (optional):  
     - Assuming you are on a Linux system, then you can install this mini program globally.  
@@ -42,7 +42,7 @@ For this program, you will need:
 6. Follow usage  
 
 ## Usage  
-pyprint.py [-h | -q | -i | -b | -p | -f] [-nc] Content  
+`pyprint.py [-h | -q | -i | -b | -p | -f] [-nc] Content`
   
 | Flags | Description                                                                                                             |  
 |-------|-------------------------------------------------------------------------------------------------------------------------|  

@@ -2,6 +2,7 @@
 # Built mainly using https://github.com/python-escpos/python-escpos library
 
 from escpos.printer import Usb
+from escpos import exceptions
 from PIL import Image
 from pdf2image import convert_from_path
 import argparse
@@ -78,13 +79,13 @@ def print_pdf(path):
             counter += 1
 
 def argument_parsing(): # The function to generate any given arguments
-    parser = argparse.ArgumentParser(prog="pyprint.py", description="Program to print silly little things off to silly little printer. By default will just print off Content.")
-    parser.add_argument('-q', help="Print off a QR code of the Content", action='store_true')
-    parser.add_argument('-i', help="Print off an image from the path of Content (can be a bit dodgy)", action='store_true')
-    parser.add_argument('-b', help="Print off a barcode (CODE128) of Content (Can be a bit dodgy)", action='store_true')
+    parser = argparse.ArgumentParser(prog="pyprint.py", description="Program to print silly little things off on a silly little printer. By default will just print off \"Content\" as text.")
+    parser.add_argument('-q', help="Print off a QR code encoded from Content", action='store_true')
+    parser.add_argument('-i', help="Print off an image from the path of Content (beware of spaces in your file path)", action='store_true')
+    parser.add_argument('-b', help="Print off a barcode (CODE128) encoded from Content", action='store_true')
     parser.add_argument('-p', help="Print off each page of a pdf file from the path of Content", action='store_true')
     parser.add_argument('-f', help="Print off a plain text file from the path of Content", action='store_true')
-    # parser.add_argument('--align', help='Set the alignment for the text to print off', action='store_true')
+    # parser.add_argument('--align', help='Set the alignment for the text to print off', action='store_true') # WIP
     parser.add_argument('-nc', help="Pass to not cut the paper after printing", action='store_true')
     parser.add_argument("Content", type=str, help="The file/text you want to print/encode")
     args = parser.parse_args()
@@ -120,18 +121,13 @@ PRODUCT=(os.environ['ID_PRODUCT'])
 INEP=(os.environ['IN_EP'])
 OUEP=(os.environ['OUT_EP'])
 
-# Try to initialise the device over usb
-device = "" # Just for this try and catch
+# Try to initialise the device over usb   
+device = Usb(idVendor=int(VENDOR, 16), idProduct=int(PRODUCT, 16), timeout=0, in_ep=int(INEP, 16), out_ep=int(OUEP, 16)) # try to find and initialize the printer, will fail with USBNotFoundError
 
-try:
-    device = Usb(idVendor=int(VENDOR, 16), idProduct=int(PRODUCT, 16), timeout=0, in_ep=int(INEP, 16), out_ep=int(OUEP, 16)) # try to find and initialize the printer
-
-except: # This may happen due to incorrect parameters for the printer, or it is not online/plugged in
-    print("Failed to initialize the printer, check it's plugged in and your parameters are set correctly.")
-    sys.exit(1)
 
 # Only one or no arguments should be true by this point
-# I am sorry for people reading this, python does not have backwards compatible and nice to use switch blocs
+# Using an if/else tree should be fine
+# I am sorry for people reading this, python does not have backwards compatible and nice to use switch blocks
 if (args.i == True): 
     device.image(image_gen(args.Content), impl="bitImageRaster", fragment_height=128) # Print the image generated directly from the function. Creds to Sam.S for helping me with this
     device.cut()
@@ -150,10 +146,6 @@ elif (args.b == True): # Print a barcode
 
 elif (args.p == True): # Print a PDF
     print_pdf(args.Content) # Look at the function, it's too complex to explain simply
-
-# elif (args.f == True): # Print a plain text file
-
-#     device.cut()
 
 else: # By this point, it's either text or a file, both of which the user can decide if they want to cut it
 
