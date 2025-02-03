@@ -9,69 +9,63 @@ import argparse
 import sys
 import dotenv
 import os
-# import time
-
-# Below are some functions that just make the code look nicer and make different sections more obvious
 
 def image_gen(file): # The function to generate and scale the given image
     img = "" # Just to save me with this try and catch
 
-    if file.format == "PPM": # If the argument passed *is* a pillow image itself, then we don't need to try to load it from a path
+    if file.format == "PPM": # For direct pillow images
         img = file
 
     else:
         try: # Try to set the image specified
             img = Image.open(file)
         except:
-            print("Failed to print specified image")
             device.close()
-            sys.exit(1) # A generic non 0 exit code
+            raise Exception("Failed to find/load image")
 
     # Obtained image, great, get some info about it
     width, height = img.size
-    
+
     # Convert the image to a standard RGB format
     img = img.convert('RGB')
 
     # Next, decide if it needs to be rotated and act accordingly
-    if (width > height): # Is the width of the image longer?
-        print("Rotating image...") # The longer side should be the height, so it needs to be rotated
+    if (width > height): # Longer side on printing edge?
+        print("Rotating image...") 
         # Transpose the image and rotate it
         img = img.transpose(Image.ROTATE_90)
         # Rescale it
-        width, height = height, width # The image has been rotated, swap the axis
+        width, height = height, width # Swap the axis
 
-    # Doesn't matter if the image has been rotated, scale it 
-    dimensions = (int(width*(384/width)), int(height*(384/width))) 
+    # Doesn't matter if the image has been rotated, scale it
+    dimensions = (int(width*(384/width)), int(height*(384/width)))
     edit = img.resize(dimensions)
 
     ''' I'm keeping this code for testing
     else: # it does not need rotating, just scale it
-        dimensions = (int(width*(384/width)), int(height*(384/width))) 
+        dimensions = (int(width*(384/width)), int(height*(384/width)))
         edit = img.resize(dimensions)
     '''
     # Transformations are done, return the edited file
-    return(edit) #return the image object and then just print that off
-    
+    return(edit)
 
 def print_pdf(path):
     # Check that the path exists
-    try: # Try to load the file 
+    try: # Try to load the file
         images = convert_from_path(path) # Create a list of all the images
     except:
-        print("Failed to load file from Path, check you entered it correctly.")
         device.close()
-        sys.exit(1) 
+        raise Exception("Failed to load pdf from path")
 
     scaled_images = [] # Instanciate a list for all of the scaled images
-    
-    for x in range(0, len(images)): # Run through each of the images and scale them
-        scaled_images.append(image_gen(images[x])) 
- 
-    counter = 0 # A counter to help count 
-    for i in (scaled_images): # For each individual item in the list of scaled images
-        print("Printing page " + str(counter+1))# Tell the user which page it is printing based off of the counter
-        device.image(i) # This is an image type, therefore it can just print it 
+
+    for x in range(0, len(images)): # Scale each of the images
+        scaled_images.append(image_gen(images[x]))
+
+    counter = 0
+    for i in (scaled_images):
+        print("Printing page " + str(counter+1))
+        device.image(i)
         device.cut()
 
         if (counter != (len(scaled_images) - 1)):
@@ -103,40 +97,35 @@ def argument_parsing(): # The function to generate any given arguments
 
     # Does True show up more than once, if so, stop and alert the user, it can appear 0 times so cannot check !=, has to be >
     if (argument_values.count("True") > 1):
-        print("You cannot print multiple types of things at once.")
-        sys.exit(1) # A generic non 0 exit code
+        raise Exception("Only one output type permitted")
 
     return(args)
 
 
 # End of function definitions
-
 # Get args
 args = argument_parsing()
 
 # Get printer values from .env file
 config = dotenv.load_dotenv(dotenv.find_dotenv())
-VENDOR=(os.environ['ID_VENDOR'])
-PRODUCT=(os.environ['ID_PRODUCT'])
-INEP=(os.environ['IN_EP'])
-OUEP=(os.environ['OUT_EP'])
+VENDOR = (os.environ['ID_VENDOR'])
+PRODUCT = (os.environ['ID_PRODUCT'])
+INEP = (os.environ['IN_EP'])
+OUEP = (os.environ['OUT_EP'])
 
-# Try to initialise the device over usb   
+# Try to initialise the device over usb
 device = Usb(idVendor=int(VENDOR, 16), idProduct=int(PRODUCT, 16), timeout=0, in_ep=int(INEP, 16), out_ep=int(OUEP, 16)) # try to find and initialize the printer, will fail with USBNotFoundError
 
-
 # Only one or no arguments should be true by this point
-# Using an if/else tree should be fine
-# I am sorry for people reading this, python does not have backwards compatible and nice to use switch blocks
-if (args.i == True): 
-    device.image(image_gen(args.Content), impl="bitImageRaster", fragment_height=128) # Print the image generated directly from the function. Creds to Sam.S for helping me with this
+if (args.i is True): # Print an image
+    device.image(image_gen(args.Content), impl="bitImageRaster", fragment_height=128) # Creds to Sam.S for helping me with this
     device.cut()
 
-elif (args.q == True): # Print a QR code
+elif (args.q is True): # Print a QR code
     device.qr(content=str(args.Content), size=10, model=2)
     device.cut()
 
-elif (args.b == True): # Print a barcode
+elif (args.b is True): # Print a barcode
     if (len(args.Content) > 5):
         w = 3
     else:
@@ -144,22 +133,22 @@ elif (args.b == True): # Print a barcode
     device.barcode(code=str(args.Content), bc="CODE128", function_type="B", height=64, width=w)
     device.cut()
 
-elif (args.p == True): # Print a PDF
-    print_pdf(args.Content) # Look at the function, it's too complex to explain simply
+elif (args.p is True): # Print a PDF
+    print_pdf(args.Content) # It's too complex to explain in a comment
 
-else: # By this point, it's either text or a file, both of which the user can decide if they want to cut it
+else: # It's text/file, the user decides to cut it
 
-    if (args.f == True):
+    if (args.f is True):
         with open(args.Content, "r") as f:
             text = f.read()
             f.close()
     else:
         text = args.Content
-        
+
     device.text(str(text) + "\n")
 
     # End with carriage returning and cutting the paper if the user wants it
-    if (args.nc == False):
+    if (args.nc is False):
         device.cut()
 
 # Reset the alignment
