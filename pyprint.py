@@ -1,4 +1,4 @@
-#!/bin/env python3
+#!/usr/bin/env python3
 # Built mainly using https://github.com/python-escpos/python-escpos library
 
 from escpos.printer import Usb
