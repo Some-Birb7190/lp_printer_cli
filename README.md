@@ -5,7 +5,7 @@ All my testing was done on a generic 58mm printer, nothing special, just somethi
   
 ## Pre-Requisites  
 For this program, you will need:  
-- Anything greater than Python 3 (made using Python 3.8.10)
+- Anything greater than Python 3 (made using Python 3.8.10, tested on 3.6.15)
 - pyusb - https://github.com/walac/pyusb  
 - Pillow - https://github.com/python-pillow/Pillow  
 - python-qrcode - https://github.com/lincolnloop/python-qrcode  
@@ -13,8 +13,7 @@ For this program, you will need:
 - python-barcode - https://github.com/WhyNotHugo/python-barcode  
 - pdf2image - https://github.com/Belval/pdf2image  
 - python-dotenv - https://github.com/theskumar/python-dotenv/  
-- python-escpos - https://github.com/python-escpos/python-escpos  
-  
+- python-escpos - https://github.com/python-escpos/python-escpos (Versions above 2.2.0 do not work)  
   
 ## Installation  
 1. Clone repository:  
@@ -42,7 +41,7 @@ For this program, you will need:
 6. Follow usage  
 
 ## Usage  
-`pyprint.py [-h | -q | -i | -b | -p | -f] [-nc] Content`
+`pyprint.py [-h | -q | -i | -b | -p | -f] Content`
   
 | Flags | Description                                                                                                             |  
 |-------|-------------------------------------------------------------------------------------------------------------------------|  
@@ -52,17 +51,7 @@ For this program, you will need:
 | -b    | Encodes "Content" inside a barcode (CODE128) and prints it. It will also print the encoded text below the code          |  
 | -p    | Takes a file path from "Content" to a pdf, converts all the pages and prints them with the above image feature          |  
 | -f    | Takes a plain text file path from "Content" and prints it out with standard line wrapping                               |  
-| -nc   | Pass to not carriage return and cut the paper after printing                                                            |  
 |Content| The file/text you want to be printed/encoded                                                                            |  
   
-
-## Notes  
-
-- By default, will just print out Content  
-- You can only print off one thing at once, passing multiple flags will throw an error  
-- The max string length for barcodes is 8 characters (for 58mm paper)  
-- [-nc] will only work when printing off a plain text file, or just text   
-- The .env file needs to be located in the same directory as any instance of pyprint, should you have it installed globally then this will do that for you  
-  
-## Some final words  
-Creds to Sam.S from my computer science class for helping me figure out the image issue.  
+## Acknowledgements  
+- Creds to Sam.S from my computer science class for helping me figure out the image issue.  
